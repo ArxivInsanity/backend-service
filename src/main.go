@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/ArxivInsanity/backend-service/docs"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
@@ -25,6 +26,7 @@ func healthCheck(c *gin.Context) {
 // @version         1.0
 // @description     The backend service for the Arxiv insanity project.
 func main() {
+	log.Debug().Msg("Starting application now")
 	router := gin.Default()
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/healthcheck", healthCheck)
