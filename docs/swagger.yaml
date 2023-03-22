@@ -1,0 +1,22 @@
+info:
+  contact: {}
+  description: The backend service for the Arxiv insanity project.
+  title: Arxiv Insanity Backend Service
+  version: "1.0"
+paths:
+  /healthcheck:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint for performing health check on the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Endpoint for Health Check
+      tags:
+      - Health Check
+swagger: "2.0"
