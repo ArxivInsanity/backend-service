@@ -1,9 +1,91 @@
+definitions:
+  auth.UserDetails:
+    properties:
+      emailId:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      profilePic:
+        type: string
+    type: object
 info:
   contact: {}
   description: The backend service for the Arxiv insanity project.
   title: Arxiv Insanity Backend Service
   version: "1.0"
 paths:
+  /auth/getUserInfo:
+    get:
+      consumes:
+      - application/json
+      description: Checks if there is a cookie preset with the jwt token. If present,
+        validates the token and then returns the user details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.UserDetails'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Endpoint for getting user details
+      tags:
+      - Auth
+  /auth/google:
+    get:
+      consumes:
+      - application/json
+      description: Will redirect user to google OAuth consent screen
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Endpoint for logging in the user using google Oauth 2
+      tags:
+      - Auth
+  /auth/google/callback:
+    get:
+      consumes:
+      - application/json
+      description: Will handel the google OAuth call back and redirect to homepage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Endpoint for handling the google OAuth callback
+      tags:
+      - Auth
+  /auth/isLoggedIn:
+    get:
+      consumes:
+      - application/json
+      description: Checks if there is a cookie preset with the jwt token. If present,
+        validates the token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Endpoint for checking if user is logged in
+      tags:
+      - Auth
   /healthcheck:
     get:
       consumes:

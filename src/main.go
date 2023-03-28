@@ -1,12 +1,14 @@
 package main
 
 import (
+	"net/http"
+
 	_ "github.com/ArxivInsanity/backend-service/docs"
+	auth "github.com/ArxivInsanity/backend-service/src/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
 )
 
 // Health Check godoc
@@ -30,5 +32,9 @@ func main() {
 	router := gin.Default()
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/healthcheck", healthCheck)
+
+	auth.SetupAuth()
+	auth.AddAuthRoutes(router)
+
 	router.Run()
 }
