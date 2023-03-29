@@ -74,8 +74,20 @@ jobs:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
 
+    - name: Deploy secret
+      env: 
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
+        OAUTH2_SECRET: ${{ secrets.OAUTH2_SECRET }}
+        OAUTH2_REDIRECT_URL: ${{ secrets.OAUTH2_REDIRECT_URL }}
+        SECRET_NAME: "backend-service-secrets"
+      run: |-
+        kubectl delete secret $SECRET_NAME --ignore-not-found=true
+        kubectl create secret generic $SECRET_NAME --from-literal=JWT_SECRET=$JWT_SECRET --from-literal=OAUTH2_CLIENT_ID=$OAUTH2_CLIENT_ID --from-literal=OAUTH2_SECRET=$OAUTH2_SECRET --from-literal=OAUTH2_REDIRECT_URL=$OAUTH2_REDIRECT_URL
+        kubectl get secrets -o wide
+
     # Deploy the Docker image to the GKE cluster
-    - name: Deploy
+    - name: Deploy app
       run: |-
         kubectl apply -f ./kubernetes
         kubectl get services -o wide
