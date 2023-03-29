@@ -1,0 +1,55 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub recommends pinning actions to a commit SHA.
+# To get a newer version, you will need to update the SHA.
+# You can also reference a tag or branch, but the action may change without warning.
+
+name: Cleanup resources in GKE
+
+on:
+  workflow_dispatch:
+
+env:
+  GCP_SA_CREDENTIALS: ${{ secrets.GCP_SA_CREDENTIALS}}
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: ${{ vars.GKE_CLUSTER }}    # Add your cluster name here.
+  GKE_ZONE: ${{ vars.GKE_ZONE }}   # Add your cluster zone here.
+  IMAGE_TAG: arxiv-insanity:backend-service
+
+jobs:
+  setup-build-publish-deploy:
+    name: Cleanup on GKE
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ env.GCP_SA_CREDENTIALS }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+
+    - id: 'get-credentials'
+      uses: 'google-github-actions/get-gke-credentials@v1'
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+
+    #Cleanup deployed secret
+    - name: Delete secret
+      run: kubectl delete secret $SECRET_NAME --ignore-not-found=true
+
+    # Cleanup application
+    - name: Delete app
+      run: |-
+        kubectl delete -f ./kubernetes
+        kubectl get services -o wide
+        kubectl get pods -o wide
