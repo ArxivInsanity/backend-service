@@ -45,6 +45,8 @@ jobs:
 
     #Cleanup deployed secret
     - name: Delete secret
+      env: 
+        SECRET_NAME: "backend-service-secrets"
       run: kubectl delete secret $SECRET_NAME --ignore-not-found=true
 
     # Cleanup application
