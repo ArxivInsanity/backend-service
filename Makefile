@@ -1,4 +1,6 @@
 build:
-	docker build -t arxiv-insanity/backend-service .
+	docker build -t gagankshetty/arxiv-insanity:backend-service .
 run:
-	docker run -it -p 8080:8080 arxiv-insanity/backend-service
+	docker run -it -p 8080:8080 gagankshetty/arxiv-insanity:backend-service
+upload:
+	docker push gagankshetty/arxiv-insanity:backend-service
