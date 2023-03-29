@@ -11,9 +11,12 @@ name: Build and Deploy to GKE
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    build:
+      type: boolean
+      description: Rebuild the docker image?
+    deploy:
+      type: boolean
+      description: Deploy the application on GKE?
 
 env:
   DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
@@ -36,45 +39,39 @@ jobs:
 
       # Login to docker hub
     - name: docker login
-      # env:
-      #   DOCKERHUB_USER: ${{ env.DOCKERHUB_USER }}
-      #   DOCKERHUB_PASS: ${{ env.DOCKERHUB_PASS }}
+      if: ${{inputs.build}}
       run: |
         docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS 
+
     # Setup the buildx to build the docker image
     - name: Set up Docker Buildx
+      if: ${{inputs.build}}
       uses: docker/setup-buildx-action@v2
+
     # Build and push the docker image
     - name: Build the Docker image
+      if: ${{inputs.build}}
       run: docker buildx build --file ./Dockerfile --platform=linux/arm64,linux/amd64 --tag $DOCKERHUB_USER/$IMAGE_TAG --output type=image,push=true .
 
-    # Setup gcloud CLI
-    # - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
-    #   with:
-    #     service_account_key: ${{ env.GCP_SA_CREDENTIALS }}
-    #     project_id: ${{ env.PROJECT_ID }}
     - id: 'auth'
+      if: ${{inputs.deploy}}
       uses: 'google-github-actions/auth@v1'
       with:
         credentials_json: '${{ env.GCP_SA_CREDENTIALS }}'
 
     - name: 'Set up Cloud SDK'
+      if: ${{inputs.deploy}}
       uses: 'google-github-actions/setup-gcloud@v1'
 
-    # Get the GKE credentials so we can deploy to the cluster
-    # - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
-    #   with:
-    #     cluster_name: ${{ env.GKE_CLUSTER }}
-    #     location: ${{ env.GKE_ZONE }}
-    #     credentials: ${{ env.GCP_SA_CREDENTIALS }}
-
     - id: 'get-credentials'
+      if: ${{inputs.deploy}}
       uses: 'google-github-actions/get-gke-credentials@v1'
       with:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
 
     - name: Deploy secret
+      if: ${{inputs.deploy}}
       env: 
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
@@ -88,6 +85,7 @@ jobs:
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy app
+      if: ${{inputs.deploy}}
       run: |-
         kubectl apply -f ./kubernetes
         kubectl get services -o wide
