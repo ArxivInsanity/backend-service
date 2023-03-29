@@ -11,12 +11,13 @@ name: Build and Deploy to GKE
 
 on:
   workflow_dispatch:
-    build:
-      type: boolean
-      description: Rebuild the docker image?
-    deploy:
-      type: boolean
-      description: Deploy the application on GKE?
+    inputs:
+      build:
+        type: boolean
+        description: Rebuild the docker image?
+      deploy:
+        type: boolean
+        description: Deploy the application on GKE?
 
 env:
   DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
