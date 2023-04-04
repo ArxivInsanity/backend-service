@@ -59,7 +59,7 @@ func HandleRedirect(c *gin.Context) {
 		return
 	}
 	log.Debug().Msg("Retrieved user " + user.Email)
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(60 * time.Minute)
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &Claims{
 		UserDetails: UserDetails{

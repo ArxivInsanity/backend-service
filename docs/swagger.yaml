@@ -10,12 +10,121 @@ definitions:
       profilePic:
         type: string
     type: object
+  models.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  project.CreateProjectDetails:
+    properties:
+      name:
+        type: string
+    type: object
+  project.ProjectDetails:
+    properties:
+      lastModifiedAt:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact: {}
   description: The backend service for the Arxiv insanity project.
   title: Arxiv Insanity Backend Service
   version: "1.0"
 paths:
+  /api/projects:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of objects that contain details of all the projects
+        created by the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/project.ProjectDetails'
+            type: array
+      summary: Endpoint for listing all the projects for the user
+      tags:
+      - Project
+    post:
+      consumes:
+      - application/json
+      description: Returns a status json that describes if the project was created
+        successfully or not
+      parameters:
+      - description: Project Details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/project.CreateProjectDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Endpoint for creating a new project
+      tags:
+      - Project
+  /api/projects/{name}:
+    delete:
+      consumes:
+      - application/json
+      description: Returns a status json that describes if the project was deleted
+        successfully.
+      parameters:
+      - description: Project name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Endpoint for deleting an existing project
+      tags:
+      - Project
+    put:
+      consumes:
+      - application/json
+      description: Returns a status json that describes if the project was updated
+        successfully.
+      parameters:
+      - description: Existing project name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Project Details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/project.CreateProjectDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Endpoint for updating an existing project details
+      tags:
+      - Project
   /auth/getUserInfo:
     get:
       consumes:

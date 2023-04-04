@@ -7,6 +7,135 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/projects": {
+            "get": {
+                "description": "Returns a list of objects that contain details of all the projects created by the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Endpoint for listing all the projects for the user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.ProjectDetails"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Returns a status json that describes if the project was created successfully or not",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Endpoint for creating a new project",
+                "parameters": [
+                    {
+                        "description": "Project Details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.CreateProjectDetails"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/projects/{name}": {
+            "put": {
+                "description": "Returns a status json that describes if the project was updated successfully.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Endpoint for updating an existing project details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Existing project name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Project Details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.CreateProjectDetails"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Returns a status json that describes if the project was deleted successfully.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Endpoint for deleting an existing project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/getUserInfo": {
             "get": {
                 "description": "Checks if there is a cookie preset with the jwt token. If present, validates the token and then returns the user details",
@@ -149,6 +278,37 @@
                     "type": "string"
                 },
                 "profilePic": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "project.CreateProjectDetails": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "project.ProjectDetails": {
+            "type": "object",
+            "properties": {
+                "lastModifiedAt": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
