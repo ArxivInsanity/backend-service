@@ -36,6 +36,7 @@ var JwtKey []byte = []byte(os.Getenv(JWT_SECRET))
 // @Success 200 {object} string
 // @Router /auth/google [get]
 func Redirect(c *gin.Context) {
+	SetupAuth(c)
 	err := gothic.BeginAuth(c.Param("provider"), c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
