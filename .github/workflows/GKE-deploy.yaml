@@ -22,6 +22,7 @@ on:
 env:
   DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
   DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+  IMAGE_TAG: arxiv-insanity:backend-service
   TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
 jobs:
