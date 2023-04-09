@@ -20,8 +20,7 @@ func main() {
 	err := database.WithDbCon(func(mc *database.MongoCon) {
 		router := gin.Default()
 		router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-		router.GET("/healthcheck", healthcheck.HealthCheck)
-
+		router.GET("/", healthcheck.HealthCheck)
 		auth.SetupAuth()
 		auth.AddAuthRoutes(router)
 		project.AddAuthRoutes(router, mc)

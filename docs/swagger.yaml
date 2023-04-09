@@ -36,6 +36,21 @@ info:
   title: Arxiv Insanity Backend Service
   version: "1.0"
 paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint for performing health check on the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Endpoint for Health Check
+      tags:
+      - Health Check
   /api/projects:
     get:
       consumes:
@@ -195,19 +210,4 @@ paths:
       summary: Endpoint for checking if user is logged in
       tags:
       - Auth
-  /healthcheck:
-    get:
-      consumes:
-      - application/json
-      description: Endpoint for performing health check on the application
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      summary: Endpoint for Health Check
-      tags:
-      - Health Check
 swagger: "2.0"

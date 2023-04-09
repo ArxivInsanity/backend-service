@@ -14,7 +14,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} string
-// @Router /healthcheck [get]
+// @Router / [get]
 func HealthCheck(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, "Up")
 }
