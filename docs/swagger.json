@@ -201,6 +201,14 @@
                     "Auth"
                 ],
                 "summary": "Endpoint for logging in the user using google Oauth 2",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The url to redirect to after authentication",
+                        "name": "redirect_uri",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -33,10 +34,16 @@ var JwtKey []byte = []byte(os.Getenv(JWT_SECRET))
 // @Tags Auth
 // @Accept json
 // @Produce json
+// @Param redirect_uri query string false "The url to redirect to after authentication"
 // @Success 200 {object} string
 // @Router /auth/google [get]
 func Redirect(c *gin.Context) {
 	SetupAuth(c)
+	redirectUrl := c.Query("redirect_uri")
+	if redirectUrl == "" {
+		redirectUrl = fmt.Sprint(GetUrl(c), "/docs/index.html")
+	}
+	c.SetCookie(REDIRECT_URL, redirectUrl, 86400, "/", "", true, true)
 	err := gothic.BeginAuth(c.Param("provider"), c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -83,9 +90,14 @@ func HandleRedirect(c *gin.Context) {
 		log.Error().Msg("Error generating JWT token: " + err.Error())
 		return
 	}
-	c.SetCookie(COOKIE_KEY, tokenString, 86400, "/", "", true, true)
+	c.SetCookie(USER_SESSION, tokenString, 86400, "/", "", true, true)
 	log.Debug().Msg("Redirecting to home page now ")
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/")
+	redirectUrl, err := c.Cookie(REDIRECT_URL)
+	if err != nil {
+		log.Error().Msg("Failed to read redirect url from cookie")
+		return
+	}
+	c.Redirect(http.StatusTemporaryRedirect, redirectUrl)
 }
 
 func extractClaimsFromJWT(tokenStr string) (*Claims, error) {
@@ -110,7 +122,7 @@ func extractClaimsFromJWT(tokenStr string) (*Claims, error) {
 }
 
 func IsValidLogin(c *gin.Context) bool {
-	tokenStr, err := c.Cookie(COOKIE_KEY)
+	tokenStr, err := c.Cookie(USER_SESSION)
 	if err != nil {
 		log.Error().Msg("Failed to read from cookie")
 		return false
@@ -152,7 +164,7 @@ func IsLoggedIn(c *gin.Context) {
 // @Failure 401 {object} string
 // @Router /auth/getUserInfo [get]
 func GetUserInfo(c *gin.Context) {
-	tokenStr, err := c.Cookie(COOKIE_KEY)
+	tokenStr, err := c.Cookie(USER_SESSION)
 	if err != nil {
 		if err == http.ErrNoCookie {
 			c.IndentedJSON(http.StatusUnauthorized, "User not logged in")

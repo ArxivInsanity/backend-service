@@ -9,14 +9,17 @@ import (
 	"github.com/markbates/goth/providers/google"
 )
 
-func SetupAuth(c *gin.Context) {
-	clientId := os.Getenv(OAUTH2_CLIENT_ID)
-	secret := os.Getenv(OAUTH2_SECRET)
+func GetUrl(c *gin.Context) string {
 	scheme := "http"
 	if c.Request.TLS != nil {
 		scheme = "https"
 	}
-	redirectUrl := fmt.Sprint(scheme, "://", c.Request.Host, "/auth/google/callback")
+	return fmt.Sprint(scheme, "://", c.Request.Host)
+}
+func SetupAuth(c *gin.Context) {
+	clientId := os.Getenv(OAUTH2_CLIENT_ID)
+	secret := os.Getenv(OAUTH2_SECRET)
+	redirectUrl := fmt.Sprint(GetUrl(c), "/auth/google/callback")
 	goth.UseProviders(
 		google.New(clientId, secret, redirectUrl, "email", "profile"),
 	)
