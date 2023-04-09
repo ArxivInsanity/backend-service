@@ -22,11 +22,7 @@ on:
 env:
   DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
   DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
-  GCP_SA_CREDENTIALS: ${{ secrets.GCP_SA_CREDENTIALS}}
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: ${{ vars.GKE_CLUSTER }}    # Add your cluster name here.
-  GKE_ZONE: ${{ vars.GKE_ZONE }}   # Add your cluster zone here.
-  IMAGE_TAG: arxiv-insanity:backend-service
+  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
 jobs:
   setup-build-publish-deploy:
@@ -54,40 +50,40 @@ jobs:
       if: ${{inputs.build}}
       run: docker buildx build --file ./Dockerfile --platform=linux/arm64,linux/amd64 --tag $DOCKERHUB_USER/$IMAGE_TAG --output type=image,push=true .
 
-    - id: 'auth'
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
       if: ${{inputs.deploy}}
-      uses: 'google-github-actions/auth@v1'
+      uses: hashicorp/setup-terraform@v1
       with:
-        credentials_json: '${{ env.GCP_SA_CREDENTIALS }}'
+        cli_config_credentials_token: ${{ env.TF_API_TOKEN }}
 
-    - name: 'Set up Cloud SDK'
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
       if: ${{inputs.deploy}}
-      uses: 'google-github-actions/setup-gcloud@v1'
+      working-directory: ./terraform
+      run: terraform init
+      env:
+        TF_CLI_ARGS: '-var-file="variables/prod.tfvars"'
 
-    - id: 'get-credentials'
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
       if: ${{inputs.deploy}}
-      uses: 'google-github-actions/get-gke-credentials@v1'
-      with:
-        cluster_name: ${{ env.GKE_CLUSTER }}
-        location: ${{ env.GKE_ZONE }}
+      working-directory: ./terraform  
+      run: terraform fmt -check
 
-    - name: Deploy secret
-      if: ${{inputs.deploy}}
-      env: 
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
-        OAUTH2_SECRET: ${{ secrets.OAUTH2_SECRET }}
-        OAUTH2_REDIRECT_URL: ${{ secrets.OAUTH2_REDIRECT_URL }}
-        SECRET_NAME: "backend-service-secrets"
-      run: |-
-        kubectl delete secret $SECRET_NAME --ignore-not-found=true
-        kubectl create secret generic $SECRET_NAME --from-literal=JWT_SECRET=$JWT_SECRET --from-literal=OAUTH2_CLIENT_ID=$OAUTH2_CLIENT_ID --from-literal=OAUTH2_SECRET=$OAUTH2_SECRET --from-literal=OAUTH2_REDIRECT_URL=$OAUTH2_REDIRECT_URL
-        kubectl get secrets -o wide
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      if: ${{inputs.deploy}} && github.ref != 'refs/heads/main'
+      working-directory: ./terraform
+      run: terraform plan -input=false
+      env:
+        TF_CLI_ARGS: '-var-file="variables/prod.tfvars"'
 
-    # Deploy the Docker image to the GKE cluster
-    - name: Deploy app
-      if: ${{inputs.deploy}}
-      run: |-
-        kubectl apply -f ./kubernetes
-        kubectl get services -o wide
-        kubectl get pods -o wide
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      if: ${{inputs.deploy}} && github.ref == 'refs/heads/main'
+      working-directory: ./terraform
+      run: terraform apply -auto-approve -input=false
+      env:
+        TF_CLI_ARGS: '-var-file="variables/prod.tfvars"'
