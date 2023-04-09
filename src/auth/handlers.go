@@ -43,7 +43,9 @@ func Redirect(c *gin.Context) {
 	if redirectUrl == "" {
 		redirectUrl = fmt.Sprint(GetUrl(c), "/docs/index.html")
 	}
-	c.SetCookie(REDIRECT_URL, redirectUrl, 86400, "/", "", true, true)
+	c.SetCookie(REDIRECT_URL, redirectUrl, 86400, "/", "", false, true)
+	log.Debug().Msg("Will redirect back to: " + redirectUrl)
+
 	err := gothic.BeginAuth(c.Param("provider"), c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -90,13 +92,13 @@ func HandleRedirect(c *gin.Context) {
 		log.Error().Msg("Error generating JWT token: " + err.Error())
 		return
 	}
-	c.SetCookie(USER_SESSION, tokenString, 86400, "/", "", true, true)
-	log.Debug().Msg("Redirecting to home page now ")
+	c.SetCookie(USER_SESSION, tokenString, 86400, "/", "", false, true)
 	redirectUrl, err := c.Cookie(REDIRECT_URL)
 	if err != nil {
-		log.Error().Msg("Failed to read redirect url from cookie")
+		log.Error().Msg("Failed to read redirect url from cookie " + err.Error())
 		return
 	}
+	log.Debug().Msg("Set cookie. Redirecting to page " + redirectUrl)
 	c.Redirect(http.StatusTemporaryRedirect, redirectUrl)
 }
 
