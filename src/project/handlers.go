@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ArxivInsanity/backend-service/src/auth"
 	"github.com/ArxivInsanity/backend-service/src/models"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -23,6 +24,12 @@ type ProjectHandler struct {
 	Collection *mongo.Collection
 }
 
+type CreateProjectDetails struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Tags        string `json:"tags"`
+}
+
 // Project godoc
 // @Summary Endpoint for listing all the projects for the user
 // @Schemes
@@ -33,7 +40,7 @@ type ProjectHandler struct {
 // @Success 200 {object} []ProjectDetails
 // @Router /api/projects [get]
 func (ph *ProjectHandler) GetAllProjects(c *gin.Context) {
-	curr, err := ph.Collection.Find(ph.Ctx, bson.D{{}})
+	curr, err := ph.Collection.Find(ph.Ctx, bson.D{{auth.USER, c.GetString(auth.USER)}})
 	if err != nil {
 		log.Error().Msg("Error fetching documents : " + err.Error())
 		return
@@ -49,10 +56,6 @@ func (ph *ProjectHandler) GetAllProjects(c *gin.Context) {
 		res = append(res, pd)
 	}
 	c.IndentedJSON(http.StatusOK, res)
-}
-
-type CreateProjectDetails struct {
-	Name string `json:"name"`
 }
 
 // Project godoc
@@ -74,8 +77,8 @@ func (ph *ProjectHandler) CreateProject(c *gin.Context) {
 		log.Error().Msg("Something went wrong binding the post body: " + err.Error())
 		return
 	}
-
-	projectDoc := models.ProjectDoc{createProjectDetails.Name, time.Now()}
+	user := c.GetString(auth.USER)
+	projectDoc := models.ProjectDoc{createProjectDetails.Name, time.Now(), createProjectDetails.Description, createProjectDetails.Tags, user}
 	projectDocument := models.ProjectDocument(&projectDoc).GetDocument()
 
 	log.Info().Msg("Request body is: " + fmt.Sprint(createProjectDetails))
@@ -104,7 +107,7 @@ func (ph *ProjectHandler) DeleteProject(c *gin.Context) {
 
 	name := c.Param("name")
 
-	deleteResult, err := ph.Collection.DeleteOne(ph.Ctx, bson.D{{"name", name}})
+	deleteResult, err := ph.Collection.DeleteOne(ph.Ctx, bson.D{{"name", name}, {auth.USER, c.GetString(auth.USER)}})
 	if err != nil {
 		log.Error().Msg("Something went wrong when deleting the document")
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -132,10 +135,11 @@ func (ph *ProjectHandler) UpdateProject(c *gin.Context) {
 	var createProjectDetails CreateProjectDetails
 	err := c.ShouldBindJSON(&createProjectDetails)
 
-	projectDoc := models.ProjectDoc{createProjectDetails.Name, time.Now()}
+	user := c.GetString(auth.USER)
+	projectDoc := models.ProjectDoc{createProjectDetails.Name, time.Now(), createProjectDetails.Description, createProjectDetails.Tags, user}
 	projectDocument := models.ProjectDocument(&projectDoc).GetDocument()
 
-	updateResult, err := ph.Collection.UpdateOne(ph.Ctx, bson.D{{"name", oldName}}, bson.D{{"$set", projectDocument}})
+	updateResult, err := ph.Collection.UpdateOne(ph.Ctx, bson.D{{"name", oldName}, {auth.USER, c.GetString(auth.USER)}}, bson.D{{"$set", projectDocument}})
 	if err != nil {
 		log.Error().Msg("Something went wrong when updating the document")
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())

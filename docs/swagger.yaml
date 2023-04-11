@@ -20,7 +20,11 @@ definitions:
     type: object
   project.CreateProjectDetails:
     properties:
+      description:
+        type: string
       name:
+        type: string
+      tags:
         type: string
     type: object
   project.ProjectDetails:

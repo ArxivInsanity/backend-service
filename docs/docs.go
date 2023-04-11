@@ -314,7 +314,13 @@ const docTemplate = `{
         "project.CreateProjectDetails": {
             "type": "object",
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "tags": {
                     "type": "string"
                 }
             }

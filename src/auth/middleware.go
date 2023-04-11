@@ -17,6 +17,7 @@ func AuthenticationRequired() gin.HandlerFunc {
 			return
 		}
 		log.Debug().Msg("User is logged in. Okay to proceed")
+		c.Set(USER, GetUserEmail(c))
 		c.Next()
 	}
 }

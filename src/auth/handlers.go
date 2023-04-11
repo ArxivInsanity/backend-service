@@ -155,6 +155,19 @@ func IsLoggedIn(c *gin.Context) {
 	}
 }
 
+func GetUserEmail(c *gin.Context) string {
+	tokenStr, err := c.Cookie(USER_SESSION)
+	if err != nil {
+		return ""
+	}
+	claims, errorDetails := extractClaimsFromJWT(tokenStr)
+	if errorDetails != nil {
+		c.IndentedJSON(http.StatusInternalServerError, "Something went wrong when getting user details")
+		log.Debug().Msg("Error : " + err.Error())
+	}
+	return claims.EmailId
+}
+
 // Auth godoc
 // @Summary Endpoint for getting user details
 // @Schemes
