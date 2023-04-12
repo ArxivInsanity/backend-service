@@ -160,6 +160,39 @@
             }
         },
         "/api/projects/{name}/seedPapers": {
+            "get": {
+                "description": "Returns a list of seed papers that have been saved for this project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Endpoint for getting all the seed papers saved for the project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Adding a seed paper to the list of existing seed papers in the project",
                 "consumes": [
@@ -171,7 +204,7 @@
                 "tags": [
                     "Project"
                 ],
-                "summary": "Endpoint to a seed paper to a project",
+                "summary": "Endpoint to add a seed paper to a project",
                 "parameters": [
                     {
                         "type": "string",

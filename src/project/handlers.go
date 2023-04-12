@@ -150,7 +150,25 @@ func (ph *ProjectHandler) UpdateProject(c *gin.Context) {
 }
 
 // Project godoc
-// @Summary Endpoint to a seed paper to a project
+// @Summary Endpoint for getting all the seed papers saved for the project
+// @Schemes
+// @Description Returns a list of seed papers that have been saved for this project
+// @Tags Project
+// @Accept json
+// @Produce json
+// @Param name path string true "Project name"
+// @Success 200 {object} []string
+// @Router /api/projects/{name}/seedPapers [get]
+func (ph *ProjectHandler) GetSeedPapers(c *gin.Context) {
+	projectName := c.Param("name")
+	res := ph.Collection.FindOne(ph.Ctx, bson.D{{"name", projectName}, {auth.USER, c.GetString(auth.USER)}})
+	var doc models.ProjectDoc
+	res.Decode(&doc)
+	c.IndentedJSON(http.StatusOK, doc.SeedPapers)
+}
+
+// Project godoc
+// @Summary Endpoint to add a seed paper to a project
 // @Schemes
 // @Description Adding a seed paper to the list of existing seed papers in the project
 // @Tags Project
@@ -165,7 +183,7 @@ func (ph *ProjectHandler) AddSeedPaper(c *gin.Context) {
 	var paperDetails models.Paper
 	err := c.ShouldBindJSON(&paperDetails)
 	var doc models.ProjectDoc
-	res := ph.Collection.FindOne(ph.Ctx, bson.D{{auth.USER, c.GetString(auth.USER)}})
+	res := ph.Collection.FindOne(ph.Ctx, bson.D{{"name", projectName}, {auth.USER, c.GetString(auth.USER)}})
 	res.Decode(&doc)
 	doc.SeedPapers = append(doc.SeedPapers, paperDetails)
 	seedPaperUpdate := models.ProjectDocument(&doc).GetSeedPaperDocument()
@@ -204,7 +222,7 @@ func (ph *ProjectHandler) DeleteSeedPaper(c *gin.Context) {
 	var paperDetails models.Paper
 	err := c.ShouldBindJSON(&paperDetails)
 	var doc models.ProjectDoc
-	res := ph.Collection.FindOne(ph.Ctx, bson.D{{auth.USER, c.GetString(auth.USER)}})
+	res := ph.Collection.FindOne(ph.Ctx, bson.D{{"name", projectName}, {auth.USER, c.GetString(auth.USER)}})
 	res.Decode(&doc)
 	index := indexOf(paperDetails, doc.SeedPapers)
 	if index == -1 {

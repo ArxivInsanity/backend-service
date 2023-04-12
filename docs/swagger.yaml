@@ -179,6 +179,28 @@ paths:
       summary: Endpoint removing a seed paper from project
       tags:
       - Project
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of seed papers that have been saved for this project
+      parameters:
+      - description: Project name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Endpoint for getting all the seed papers saved for the project
+      tags:
+      - Project
     put:
       consumes:
       - application/json
@@ -203,7 +225,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Endpoint to a seed paper to a project
+      summary: Endpoint to add a seed paper to a project
       tags:
       - Project
   /auth/getUserInfo:

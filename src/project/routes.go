@@ -12,6 +12,7 @@ func AddAuthRoutes(router *gin.Engine, mongoCon *database.MongoCon) {
 	router.PUT("/api/projects/:name", ph.UpdateProject)
 	router.DELETE("/api/projects/:name", ph.DeleteProject)
 
+	router.GET("/api/projects/:name/seedPapers", ph.GetSeedPapers)
 	router.PUT("/api/projects/:name/seedPapers", ph.AddSeedPaper)
 	router.DELETE("/api/projects/:name/seedPapers", ph.DeleteSeedPaper)
 }
