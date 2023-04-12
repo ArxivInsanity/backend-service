@@ -30,7 +30,7 @@ For local setup, use dev containers:
         "showLog": true
       }
     ]
-  }
+}
 ```
 4. Press F5 (or click on Run and Debug and click start)
 5. Navigate to [localhost](http://localhost:8080/docs/index.html) to see the swagger UI.
