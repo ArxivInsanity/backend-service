@@ -70,18 +70,18 @@ func (ph *ProjectHandler) GetAllProjects(c *gin.Context) {
 // @Router /api/projects [post]
 func (ph *ProjectHandler) CreateProject(c *gin.Context) {
 
-	var createProjectDetails CreateProjectDetails
-	err := c.ShouldBindJSON(&createProjectDetails)
+	var projectDoc models.ProjectDoc
+	err := c.ShouldBindJSON(&projectDoc)
 
 	if err != nil {
 		log.Error().Msg("Something went wrong binding the post body: " + err.Error())
 		return
 	}
-	user := c.GetString(auth.USER)
-	projectDoc := models.ProjectDoc{createProjectDetails.Name, time.Now(), createProjectDetails.Description, createProjectDetails.Tags, user}
-	projectDocument := models.ProjectDocument(&projectDoc).GetDocument()
-
-	log.Info().Msg("Request body is: " + fmt.Sprint(createProjectDetails))
+	projectDoc.User = c.GetString(auth.USER)
+	projectDoc.LastModifiedAt = time.Now()
+	projectDoc.SeedPapers = make([]models.Paper, 0)
+	projectDoc.ReadingList = make([]models.Paper, 0)
+	projectDocument := models.ProjectDocument(&projectDoc).GetFullDocument()
 
 	_, err = ph.Collection.InsertOne(ph.Ctx, projectDocument)
 	if err != nil {
@@ -132,12 +132,11 @@ func (ph *ProjectHandler) DeleteProject(c *gin.Context) {
 func (ph *ProjectHandler) UpdateProject(c *gin.Context) {
 
 	oldName := c.Param("name")
-	var createProjectDetails CreateProjectDetails
-	err := c.ShouldBindJSON(&createProjectDetails)
-
-	user := c.GetString(auth.USER)
-	projectDoc := models.ProjectDoc{createProjectDetails.Name, time.Now(), createProjectDetails.Description, createProjectDetails.Tags, user}
-	projectDocument := models.ProjectDocument(&projectDoc).GetDocument()
+	var doc models.ProjectDoc
+	err := c.ShouldBindJSON(&doc)
+	doc.User = c.GetString(auth.USER)
+	doc.LastModifiedAt = time.Now()
+	projectDocument := models.ProjectDocument(&doc).GetBaseDocument()
 
 	updateResult, err := ph.Collection.UpdateOne(ph.Ctx, bson.D{{"name", oldName}, {auth.USER, c.GetString(auth.USER)}}, bson.D{{"$set", projectDocument}})
 	if err != nil {
@@ -146,6 +145,80 @@ func (ph *ProjectHandler) UpdateProject(c *gin.Context) {
 		return
 	}
 
+	response := models.Response{http.StatusOK, "Success", fmt.Sprint("Updated ", updateResult.ModifiedCount, " documents")}
+	c.IndentedJSON(http.StatusOK, response)
+}
+
+// Project godoc
+// @Summary Endpoint to a seed paper to a project
+// @Schemes
+// @Description Adding a seed paper to the list of existing seed papers in the project
+// @Tags Project
+// @Accept json
+// @Produce json
+// @Param name path string true "Project name"
+// @Param body body models.Paper true "Seed paper details"
+// @Success 200 {object} models.Response
+// @Router /api/projects/{name}/seedPapers [put]
+func (ph *ProjectHandler) AddSeedPaper(c *gin.Context) {
+	projectName := c.Param("name")
+	var paperDetails models.Paper
+	err := c.ShouldBindJSON(&paperDetails)
+	var doc models.ProjectDoc
+	res := ph.Collection.FindOne(ph.Ctx, bson.D{{auth.USER, c.GetString(auth.USER)}})
+	res.Decode(&doc)
+	doc.SeedPapers = append(doc.SeedPapers, paperDetails)
+	seedPaperUpdate := models.ProjectDocument(&doc).GetSeedPaperDocument()
+	updateResult, err := ph.Collection.UpdateOne(ph.Ctx, bson.D{{"name", projectName}, {auth.USER, c.GetString(auth.USER)}}, bson.D{{"$set", seedPaperUpdate}})
+	if err != nil {
+		log.Error().Msg("Something went wrong when updating the document")
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	response := models.Response{http.StatusOK, "Success", fmt.Sprint("Updated ", updateResult.ModifiedCount, " documents")}
+	c.IndentedJSON(http.StatusOK, response)
+}
+
+func indexOf(element models.Paper, data []models.Paper) int {
+	for k, v := range data {
+		if element == v {
+			return k
+		}
+	}
+	return -1 //not found.
+}
+
+// Project godoc
+// @Summary Endpoint removing a seed paper from project
+// @Schemes
+// @Description Deleting a seed paper from the list of existing seed papers in the project
+// @Tags Project
+// @Accept json
+// @Produce json
+// @Param name path string true "Project name"
+// @Param body body models.Paper true "Seed paper details"
+// @Success 200 {object} models.Response
+// @Router /api/projects/{name}/seedPapers [delete]
+func (ph *ProjectHandler) DeleteSeedPaper(c *gin.Context) {
+	projectName := c.Param("name")
+	var paperDetails models.Paper
+	err := c.ShouldBindJSON(&paperDetails)
+	var doc models.ProjectDoc
+	res := ph.Collection.FindOne(ph.Ctx, bson.D{{auth.USER, c.GetString(auth.USER)}})
+	res.Decode(&doc)
+	index := indexOf(paperDetails, doc.SeedPapers)
+	if index == -1 {
+		c.IndentedJSON(http.StatusBadRequest, models.Response{http.StatusBadRequest, "Error", fmt.Sprint("This seed paper doesn't exist - ", paperDetails)})
+		return
+	}
+	doc.SeedPapers = append(doc.SeedPapers[:index], doc.SeedPapers[index+1:]...)
+	seedPaperUpdate := models.ProjectDocument(&doc).GetSeedPaperDocument()
+	updateResult, err := ph.Collection.UpdateOne(ph.Ctx, bson.D{{"name", projectName}, {auth.USER, c.GetString(auth.USER)}}, bson.D{{"$set", seedPaperUpdate}})
+	if err != nil {
+		log.Error().Msg("Something went wrong when updating the document")
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 	response := models.Response{http.StatusOK, "Success", fmt.Sprint("Updated ", updateResult.ModifiedCount, " documents")}
 	c.IndentedJSON(http.StatusOK, response)
 }

@@ -10,6 +10,13 @@ definitions:
       profilePic:
         type: string
     type: object
+  models.Paper:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   models.Response:
     properties:
       data: {}
@@ -142,6 +149,61 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: Endpoint for updating an existing project details
+      tags:
+      - Project
+  /api/projects/{name}/seedPapers:
+    delete:
+      consumes:
+      - application/json
+      description: Deleting a seed paper from the list of existing seed papers in
+        the project
+      parameters:
+      - description: Project name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Seed paper details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Paper'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Endpoint removing a seed paper from project
+      tags:
+      - Project
+    put:
+      consumes:
+      - application/json
+      description: Adding a seed paper to the list of existing seed papers in the
+        project
+      parameters:
+      - description: Project name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Seed paper details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Paper'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Endpoint to a seed paper to a project
       tags:
       - Project
   /auth/getUserInfo:
