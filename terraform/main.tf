@@ -56,4 +56,5 @@ module "backend_service" {
   oauth2_secret         = var.oauth2_secret
   mongo_url             = var.mongo_url
   backend_service_image = var.backend_service_image
+  ss_api_key            = var.ss_api_key
 }

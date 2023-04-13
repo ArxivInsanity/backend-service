@@ -32,3 +32,6 @@ variable "mongo_url" {
 variable "backend_service_image" {
   description = "The docker image for backend service application that should be deployed in kubernetes pod"
 }
+variable "ss_api_key" {
+  description = "This semantic scholar api key to be used by backend service"
+}
