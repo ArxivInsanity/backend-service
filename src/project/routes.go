@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AddAuthRoutes(router *gin.Engine, mongoCon *database.MongoCon) {
+func AddRoutes(router *gin.Engine, mongoCon *database.MongoCon) {
 	ph := ProjectHandler{mongoCon.Ctx, mongoCon.Collection}
 	router.GET("/api/projects", ph.GetAllProjects)
 	router.POST("/api/projects", ph.CreateProject)

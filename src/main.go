@@ -5,6 +5,7 @@ import (
 	"github.com/ArxivInsanity/backend-service/src/auth"
 	"github.com/ArxivInsanity/backend-service/src/database"
 	"github.com/ArxivInsanity/backend-service/src/healthcheck"
+	"github.com/ArxivInsanity/backend-service/src/paper"
 	"github.com/ArxivInsanity/backend-service/src/project"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -21,8 +22,9 @@ func main() {
 		router := gin.Default()
 		router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		router.GET("/", healthcheck.HealthCheck)
-		auth.AddAuthRoutes(router)
-		project.AddAuthRoutes(router, mc)
+		auth.AddRoutes(router)
+		project.AddRoutes(router, mc)
+		paper.AddRoutes(router)
 
 		router.Run()
 	})

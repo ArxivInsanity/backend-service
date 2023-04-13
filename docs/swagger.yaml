@@ -62,6 +62,49 @@ paths:
       summary: Endpoint for Health Check
       tags:
       - Health Check
+  /api/papers/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint to retrieve paper details given a paper id
+      parameters:
+      - description: The paper id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Retrieves paper details
+      tags:
+      - Papers
+  /api/papers/autocomplete:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint to retrieve autocomplete suggestions for papers that the
+        user types in the search
+      parameters:
+      - description: The query to search for papers
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Autocomplete suggestions for paper search
+      tags:
+      - Papers
   /api/projects:
     get:
       consumes:

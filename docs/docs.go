@@ -39,6 +39,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/papers/autocomplete": {
+            "get": {
+                "description": "Endpoint to retrieve autocomplete suggestions for papers that the user types in the search",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Papers"
+                ],
+                "summary": "Autocomplete suggestions for paper search",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The query to search for papers",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/papers/{id}": {
+            "get": {
+                "description": "Endpoint to retrieve paper details given a paper id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Papers"
+                ],
+                "summary": "Retrieves paper details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The paper id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects": {
             "get": {
                 "description": "Returns a list of objects that contain details of all the projects created by the user",
