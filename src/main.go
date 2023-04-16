@@ -3,7 +3,7 @@ package main
 import (
 	_ "github.com/ArxivInsanity/backend-service/docs"
 	"github.com/ArxivInsanity/backend-service/src/auth"
-	"github.com/ArxivInsanity/backend-service/src/database"
+	"github.com/ArxivInsanity/backend-service/src/config"
 	"github.com/ArxivInsanity/backend-service/src/healthcheck"
 	"github.com/ArxivInsanity/backend-service/src/paper"
 	"github.com/ArxivInsanity/backend-service/src/project"
@@ -18,8 +18,9 @@ import (
 // @description     The backend service for the Arxiv insanity project.
 func main() {
 	log.Debug().Msg("Starting application now")
-	err := database.WithDbCon(func(mc *database.MongoCon) {
+	err := config.WithDbCon(func(mc *config.MongoCon) {
 		router := gin.Default()
+		router.Use(config.CORSMiddleware())
 		router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		router.GET("/", healthcheck.HealthCheck)
 		auth.AddRoutes(router)

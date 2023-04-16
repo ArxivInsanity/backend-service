@@ -1,11 +1,11 @@
 package project
 
 import (
-	"github.com/ArxivInsanity/backend-service/src/database"
+	"github.com/ArxivInsanity/backend-service/src/config"
 	"github.com/gin-gonic/gin"
 )
 
-func AddRoutes(router *gin.Engine, mongoCon *database.MongoCon) {
+func AddRoutes(router *gin.Engine, mongoCon *config.MongoCon) {
 	ph := ProjectHandler{mongoCon.Ctx, mongoCon.Collection}
 	router.GET("/api/projects", ph.GetAllProjects)
 	router.POST("/api/projects", ph.CreateProject)
