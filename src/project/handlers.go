@@ -37,6 +37,7 @@ type CreateProjectDetails struct {
 // @Tags Project
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Success 200 {object} []ProjectDetails
 // @Router /api/projects [get]
 func (ph *ProjectHandler) GetAllProjects(c *gin.Context) {
@@ -65,6 +66,7 @@ func (ph *ProjectHandler) GetAllProjects(c *gin.Context) {
 // @Tags Project
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param body body CreateProjectDetails true "Project Details"
 // @Success 200 {object} models.Response
 // @Router /api/projects [post]
@@ -100,6 +102,7 @@ func (ph *ProjectHandler) CreateProject(c *gin.Context) {
 // @Tags Project
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param name path string true "Project name"
 // @Success 200 {object} models.Response
 // @Router /api/projects/{name} [delete]
@@ -125,6 +128,7 @@ func (ph *ProjectHandler) DeleteProject(c *gin.Context) {
 // @Tags Project
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param name path string true "Existing project name"
 // @Param body body CreateProjectDetails true "Project Details"
 // @Success 200 {object} models.Response
@@ -156,6 +160,7 @@ func (ph *ProjectHandler) UpdateProject(c *gin.Context) {
 // @Tags Project
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param name path string true "Project name"
 // @Success 200 {object} []string
 // @Router /api/projects/{name}/seedPapers [get]
@@ -174,6 +179,7 @@ func (ph *ProjectHandler) GetSeedPapers(c *gin.Context) {
 // @Tags Project
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param name path string true "Project name"
 // @Param body body models.Paper true "Seed paper details"
 // @Success 200 {object} models.Response
@@ -213,6 +219,7 @@ func indexOf(element models.Paper, data []models.Paper) int {
 // @Tags Project
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param name path string true "Project name"
 // @Param body body models.Paper true "Seed paper details"
 // @Success 200 {object} models.Response

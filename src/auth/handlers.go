@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -56,7 +57,7 @@ func Redirect(c *gin.Context) {
 // Auth godoc
 // @Summary Endpoint for handling the google OAuth callback
 // @Schemes
-// @Description Will handel the google OAuth call back and redirect to homepage
+// @Description Will handle the google OAuth call back and redirect to homepage with the token in the url
 // @Tags Auth
 // @Accept json
 // @Produce json
@@ -92,13 +93,13 @@ func HandleRedirect(c *gin.Context) {
 		log.Error().Msg("Error generating JWT token: " + err.Error())
 		return
 	}
-	c.SetCookie(USER_SESSION, tokenString, 86400, "/", "", false, true)
 	redirectUrl, err := c.Cookie(REDIRECT_URL)
 	if err != nil {
 		log.Error().Msg("Failed to read redirect url from cookie " + err.Error())
 		return
 	}
-	log.Debug().Msg("Set cookie. Redirecting to page " + redirectUrl)
+	redirectUrl = redirectUrl + "?token=" + tokenString
+	log.Debug().Msg("Redirecting to page " + redirectUrl)
 	c.Redirect(http.StatusTemporaryRedirect, redirectUrl)
 }
 
@@ -123,15 +124,24 @@ func extractClaimsFromJWT(tokenStr string) (*Claims, error) {
 
 }
 
+func GetToken(c *gin.Context) (string, error) {
+	authorization := c.GetHeader("Authorization")
+	splitToken := strings.Split(authorization, "Bearer ")
+	if len(splitToken) == 1 {
+		return "", errors.New("Inavlid header: " + authorization)
+	}
+	return splitToken[1], nil
+}
+
 func IsValidLogin(c *gin.Context) bool {
-	tokenStr, err := c.Cookie(USER_SESSION)
+	tokenStr, err := GetToken(c)
 	if err != nil {
-		log.Error().Msg("Failed to read from cookie")
+		log.Error().Msg("Failed to get token: " + err.Error())
 		return false
 	}
 	_, err = extractClaimsFromJWT(tokenStr)
 	if err != nil {
-		log.Error().Msg("Failed to extract claim from cookie")
+		log.Error().Msg("Failed to extract claim from token")
 		return false
 	}
 	return true
@@ -140,10 +150,11 @@ func IsValidLogin(c *gin.Context) bool {
 // Auth godoc
 // @Summary Endpoint for checking if user is logged in
 // @Schemes
-// @Description Checks if there is a cookie preset with the jwt token. If present, validates the token
+// @Description Checks if there is a valid jwt token present in the headers.
 // @Tags Auth
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Success 200 {object} string
 // @Failure 401 {object} string
 // @Router /auth/isLoggedIn [get]
@@ -156,7 +167,7 @@ func IsLoggedIn(c *gin.Context) {
 }
 
 func GetUserEmail(c *gin.Context) string {
-	tokenStr, err := c.Cookie(USER_SESSION)
+	tokenStr, err := GetToken(c)
 	if err != nil {
 		return ""
 	}
@@ -171,20 +182,21 @@ func GetUserEmail(c *gin.Context) string {
 // Auth godoc
 // @Summary Endpoint for getting user details
 // @Schemes
-// @Description Checks if there is a cookie preset with the jwt token. If present, validates the token and then returns the user details
+// @Description Checks if there is a valid jwt token present in the header. If present, validates the token and then returns the user details
 // @Tags Auth
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Success 200 {object} UserDetails
 // @Failure 401 {object} string
 // @Router /auth/getUserInfo [get]
 func GetUserInfo(c *gin.Context) {
-	tokenStr, err := c.Cookie(USER_SESSION)
+	tokenStr, err := GetToken(c)
 	if err != nil {
 		if err == http.ErrNoCookie {
 			c.IndentedJSON(http.StatusUnauthorized, "User not logged in")
 		} else {
-			c.IndentedJSON(http.StatusInternalServerError, "Something went wrong when retrieving token")
+			c.IndentedJSON(http.StatusInternalServerError, "Something went wrong when retrieving token. Err :"+err.Error())
 		}
 		return
 	}

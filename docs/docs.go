@@ -41,6 +41,11 @@ const docTemplate = `{
         },
         "/api/papers/autocomplete": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Endpoint to retrieve autocomplete suggestions for papers that the user types in the search",
                 "consumes": [
                     "application/json"
@@ -73,6 +78,11 @@ const docTemplate = `{
         },
         "/api/papers/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Endpoint to retrieve paper details given a paper id",
                 "consumes": [
                     "application/json"
@@ -105,6 +115,11 @@ const docTemplate = `{
         },
         "/api/projects": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Returns a list of objects that contain details of all the projects created by the user",
                 "consumes": [
                     "application/json"
@@ -129,6 +144,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Returns a status json that describes if the project was created successfully or not",
                 "consumes": [
                     "application/json"
@@ -163,6 +183,11 @@ const docTemplate = `{
         },
         "/api/projects/{name}": {
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Returns a status json that describes if the project was updated successfully.",
                 "consumes": [
                     "application/json"
@@ -202,6 +227,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Returns a status json that describes if the project was deleted successfully.",
                 "consumes": [
                     "application/json"
@@ -234,6 +264,11 @@ const docTemplate = `{
         },
         "/api/projects/{name}/seedPapers": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Returns a list of seed papers that have been saved for this project",
                 "consumes": [
                     "application/json"
@@ -267,6 +302,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Adding a seed paper to the list of existing seed papers in the project",
                 "consumes": [
                     "application/json"
@@ -306,6 +346,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Deleting a seed paper from the list of existing seed papers in the project",
                 "consumes": [
                     "application/json"
@@ -347,7 +392,12 @@ const docTemplate = `{
         },
         "/auth/getUserInfo": {
             "get": {
-                "description": "Checks if there is a cookie preset with the jwt token. If present, validates the token and then returns the user details",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Checks if there is a valid jwt token present in the header. If present, validates the token and then returns the user details",
                 "consumes": [
                     "application/json"
                 ],
@@ -407,7 +457,7 @@ const docTemplate = `{
         },
         "/auth/google/callback": {
             "get": {
-                "description": "Will handel the google OAuth call back and redirect to homepage",
+                "description": "Will handle the google OAuth call back and redirect to homepage with the token in the url",
                 "consumes": [
                     "application/json"
                 ],
@@ -430,7 +480,12 @@ const docTemplate = `{
         },
         "/auth/isLoggedIn": {
             "get": {
-                "description": "Checks if there is a cookie preset with the jwt token. If present, validates the token",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Checks if there is a valid jwt token present in the headers.",
                 "consumes": [
                     "application/json"
                 ],
@@ -523,6 +578,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

@@ -80,6 +80,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
       summary: Retrieves paper details
       tags:
       - Papers
@@ -102,6 +104,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
       summary: Autocomplete suggestions for paper search
       tags:
       - Papers
@@ -120,6 +124,8 @@ paths:
             items:
               $ref: '#/definitions/project.ProjectDetails'
             type: array
+      security:
+      - Bearer: []
       summary: Endpoint for listing all the projects for the user
       tags:
       - Project
@@ -142,6 +148,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
       summary: Endpoint for creating a new project
       tags:
       - Project
@@ -164,6 +172,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
       summary: Endpoint for deleting an existing project
       tags:
       - Project
@@ -191,6 +201,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
       summary: Endpoint for updating an existing project details
       tags:
       - Project
@@ -219,6 +231,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
       summary: Endpoint removing a seed paper from project
       tags:
       - Project
@@ -241,6 +255,8 @@ paths:
             items:
               type: string
             type: array
+      security:
+      - Bearer: []
       summary: Endpoint for getting all the seed papers saved for the project
       tags:
       - Project
@@ -268,6 +284,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
       summary: Endpoint to add a seed paper to a project
       tags:
       - Project
@@ -275,8 +293,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Checks if there is a cookie preset with the jwt token. If present,
-        validates the token and then returns the user details
+      description: Checks if there is a valid jwt token present in the header. If
+        present, validates the token and then returns the user details
       produces:
       - application/json
       responses:
@@ -288,6 +306,8 @@ paths:
           description: Unauthorized
           schema:
             type: string
+      security:
+      - Bearer: []
       summary: Endpoint for getting user details
       tags:
       - Auth
@@ -315,7 +335,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Will handel the google OAuth call back and redirect to homepage
+      description: Will handle the google OAuth call back and redirect to homepage
+        with the token in the url
       produces:
       - application/json
       responses:
@@ -330,8 +351,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Checks if there is a cookie preset with the jwt token. If present,
-        validates the token
+      description: Checks if there is a valid jwt token present in the headers.
       produces:
       - application/json
       responses:
@@ -343,7 +363,14 @@ paths:
           description: Unauthorized
           schema:
             type: string
+      security:
+      - Bearer: []
       summary: Endpoint for checking if user is logged in
       tags:
       - Auth
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

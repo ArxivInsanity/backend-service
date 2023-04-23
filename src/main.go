@@ -16,6 +16,9 @@ import (
 // @title           Arxiv Insanity Backend Service
 // @version         1.0
 // @description     The backend service for the Arxiv insanity project.
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 func main() {
 	log.Debug().Msg("Starting application now")
 	err := config.WithDbCon(func(mc *config.MongoCon) {

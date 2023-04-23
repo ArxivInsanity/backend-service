@@ -28,6 +28,7 @@ type AutoCompleteResult struct {
 // @Accept json
 // @Produce json
 // @Param query query string true "The query to search for papers"
+// @Security Bearer
 // @Success 200 {object} models.Response
 // @Router /api/papers/autocomplete [get]
 func GetPaperAutocompleteSuggestions(c *gin.Context) {
@@ -85,6 +86,7 @@ type PaperDetails struct {
 // @Produce json
 // @Param id path string true "The paper id"
 // @Success 200 {object} models.Response
+// @Security Bearer
 // @Router /api/papers/{id} [get]
 func GetPaperDetails(c *gin.Context) {
 	client := &http.Client{}
