@@ -25,9 +25,9 @@ type ProjectHandler struct {
 }
 
 type CreateProjectDetails struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Tags        string `json:"tags"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Tags        []string `json:"tags"`
 }
 
 // Project godoc

@@ -21,7 +21,7 @@ type ProjectDoc struct {
 	Name           string    `json:"name"`
 	LastModifiedAt time.Time `json:"lastModifiedAt"`
 	Description    string    `json:"description"`
-	Tags           string    `json:"tags"`
+	Tags           []string  `json:"tags"`
 	User           string    `json:"user"`
 	SeedPapers     []Paper   `json:"seedPapers"`
 	ReadingList    []Paper   `json:"readingList"`
