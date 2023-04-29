@@ -49,7 +49,7 @@ jobs:
     # Build and push the docker image
     - name: Build the Docker image
       if: ${{inputs.build}}
-      run: docker buildx build --file ./Dockerfile --platform=linux/arm64,linux/amd64 --tag $DOCKERHUB_USER/$IMAGE_TAG --output type=image,push=true .
+      run: docker buildx build --file ./Dockerfile --platform=linux/amd64 --tag $DOCKERHUB_USER/$IMAGE_TAG --output type=image,push=true .
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
