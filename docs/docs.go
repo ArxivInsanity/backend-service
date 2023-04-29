@@ -39,6 +39,71 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/graph/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Endpoint to get the generated graph for a paper",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Graph"
+                ],
+                "summary": "Retrieve graph for a paper",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The paper id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "The authors",
+                        "name": "authors",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The min year",
+                        "name": "minYear",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The max year",
+                        "name": "maxYear",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The minimum number of citations",
+                        "name": "minCitation",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/papers/autocomplete": {
             "get": {
                 "security": [

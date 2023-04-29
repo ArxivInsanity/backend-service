@@ -64,6 +64,48 @@ paths:
       summary: Endpoint for Health Check
       tags:
       - Health Check
+  /api/graph/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint to get the generated graph for a paper
+      parameters:
+      - description: The paper id
+        in: path
+        name: id
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: The authors
+        in: query
+        items:
+          type: string
+        name: authors
+        type: array
+      - description: The min year
+        in: query
+        name: minYear
+        type: string
+      - description: The max year
+        in: query
+        name: maxYear
+        type: string
+      - description: The minimum number of citations
+        in: query
+        name: minCitation
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - Bearer: []
+      summary: Retrieve graph for a paper
+      tags:
+      - Graph
   /api/papers/{id}:
     get:
       consumes:

@@ -4,6 +4,7 @@ import (
 	_ "github.com/ArxivInsanity/backend-service/docs"
 	"github.com/ArxivInsanity/backend-service/src/auth"
 	"github.com/ArxivInsanity/backend-service/src/config"
+	"github.com/ArxivInsanity/backend-service/src/graph"
 	"github.com/ArxivInsanity/backend-service/src/healthcheck"
 	"github.com/ArxivInsanity/backend-service/src/paper"
 	"github.com/ArxivInsanity/backend-service/src/project"
@@ -29,6 +30,7 @@ func main() {
 		auth.AddRoutes(router)
 		project.AddRoutes(router, mc)
 		paper.AddRoutes(router)
+		graph.AddRoutes(router)
 
 		router.Run()
 	})
