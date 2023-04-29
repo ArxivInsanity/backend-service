@@ -75,6 +75,7 @@ type PaperDetails struct {
 	Authors    []Author    `json:"authors"`
 	Abstract   string      `json:"abstract"`
 	References []Reference `json:"references"`
+	Title      string      `json:"title"`
 }
 
 // Papers godoc
