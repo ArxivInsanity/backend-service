@@ -3,6 +3,9 @@
 	"build": {
 		"dockerfile": "./Dockerfile" 
 	},
+	// "runArgs": [
+	// 	"--network=app-network"
+	// ],
 	"forwardPorts": [8080],
 	"postCreateCommand": "go mod download",
 	"customizations": {

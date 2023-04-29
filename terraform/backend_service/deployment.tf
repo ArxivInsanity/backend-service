@@ -44,17 +44,20 @@ resource "kubernetes_deployment" "backend_service_deployment" {
             secret_ref {
               name = local.backend_service_secret
             }
+            config_map_ref {
+              name = local.backend_service_config_map
+            }
           }
           readiness_probe {
             http_get {
               path = "/"
-              port = 8080
+              port = local.backend_service_port
             }
           }
           liveness_probe {
             http_get {
               path = "/"
-              port = 8080
+              port = local.backend_service_port
             }
           }
         }

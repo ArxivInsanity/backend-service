@@ -16,3 +16,7 @@ variable "backend_service_image" {
 variable "ss_api_key" {
   description = "This semantic scholar api key to be used by backend service"
 }
+
+variable "graph_service_endpoint" {
+  description = "The endpoint to connect to the graph service"
+}
