@@ -93,7 +93,7 @@ func GetPaperDetails(c *gin.Context) {
 	req, _ := http.NewRequest("GET", BASE_URL+PAPER_DETAILS_ENDPOINT+"/"+c.Param("id"), nil)
 	req.Header.Add("x-api-key", os.Getenv(SS_API_KEY))
 	q := req.URL.Query()
-	q.Add("fields", "url,year,authors,abstract,references")
+	q.Add("fields", "url,year,authors,abstract,references,title")
 	req.URL.RawQuery = q.Encode()
 	resp, err := client.Do(req)
 	if err != nil {

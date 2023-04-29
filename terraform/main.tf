@@ -61,7 +61,6 @@ data "terraform_remote_state" "graph_service" {
 module "backend_service" {
   source = "./backend_service"
 
-  jwt_secret             = var.jwt_secret
   oauth2_client_id       = var.oauth2_client_id
   oauth2_secret          = var.oauth2_secret
   mongo_url              = var.mongo_url

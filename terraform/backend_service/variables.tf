@@ -1,6 +1,3 @@
-variable "jwt_secret" {
-  description = "The secret for the JWT"
-}
 variable "oauth2_client_id" {
   description = "The client id for google oauth"
 }
