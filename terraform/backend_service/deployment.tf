@@ -44,6 +44,8 @@ resource "kubernetes_deployment" "backend_service_deployment" {
             secret_ref {
               name = local.backend_service_secret
             }
+          }
+          env_from {
             config_map_ref {
               name = local.backend_service_config_map
             }
