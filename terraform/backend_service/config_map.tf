@@ -1,6 +1,6 @@
 resource "kubernetes_config_map" "backend_service_config_map" {
   metadata {
-    name = local.backend_service_secret
+    name = local.backend_service_config_map
   }
 
   data = {
