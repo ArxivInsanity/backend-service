@@ -1,5 +1,5 @@
 resource "kubernetes_deployment" "backend_service_deployment" {
-  depends_on = [kubernetes_secret.backend_service_secret]
+  depends_on = [kubernetes_secret.backend_service_secret, kubernetes_config_map.backend_service_config_map]
   metadata {
     name = local.backend_deployment_label
     labels = {
