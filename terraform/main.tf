@@ -19,12 +19,12 @@ terraform {
 }
 
 provider "google" {
-  project = var.project
-  region  = var.region
-  zone    = var.zone
+  project = data.terraform_remote_state.infra.outputs.google_project_details.project
+  region  = data.terraform_remote_state.infra.outputs.google_project_details.region
+  zone    = data.terraform_remote_state.infra.outputs.google_project_details.zone
 }
 
-data "terraform_remote_state" "gke" {
+data "terraform_remote_state" "infra" {
   backend = "remote"
   config = {
     organization = "Arxiv-Insanity"
@@ -37,12 +37,12 @@ data "terraform_remote_state" "gke" {
 data "google_client_config" "default" {}
 
 data "google_container_cluster" "my_cluster" {
-  name     = data.terraform_remote_state.gke.outputs.gke_outputs.cluster_name
-  location = data.terraform_remote_state.gke.outputs.gke_outputs.location
+  name     = data.terraform_remote_state.infra.outputs.gke_outputs.cluster_name
+  location = data.terraform_remote_state.infra.outputs.gke_outputs.location
 }
 
 provider "kubernetes" {
-  host = "https://${data.terraform_remote_state.gke.outputs.gke_outputs.cluster_host}"
+  host = "https://${data.terraform_remote_state.infra.outputs.gke_outputs.cluster_host}"
 
   token                  = data.google_client_config.default.access_token
   cluster_ca_certificate = base64decode(data.google_container_cluster.my_cluster.master_auth[0].cluster_ca_certificate)
